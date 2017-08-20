@@ -8,33 +8,37 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import io.instag.nearbyposts.model.data.Location;
+import io.instag.nearbyposts.model.data.LocationData;
 
 /**
  * Created by javed on 20/08/2017.
  */
 
-public class LocationAdapter extends ArrayAdapter<String> {
+public class LocationAdapter extends ArrayAdapter<LocationData> {
 
-    private Context context;
-    private List<String> locationList;
+    private Context mContext;
+    private List<LocationData> mLocationDataList = new ArrayList<>();
 
     public LocationAdapter(Context context,
                            int textViewResourceId,
-                           List<String> values) {
+                           List<LocationData> locationDataList) {
 
-        super(context, textViewResourceId, values);
+        super(context, textViewResourceId, locationDataList);
 
-        this.context = context;
-        this.locationList = values;
+        this.mContext = context;
+        this.mLocationDataList = locationDataList;
     }
 
     public int getCount(){
-        return locationList.size();
+        return mLocationDataList.size();
     }
 
-    public String getItem(int position){
-        return locationList.get(position);
+    public LocationData getItem(int position){
+        return mLocationDataList.get(position);
     }
 
     public long getItemId(int position){
@@ -43,10 +47,10 @@ public class LocationAdapter extends ArrayAdapter<String> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        TextView view = new TextView(context);
+        TextView view = new TextView(mContext);
         view.setTextColor(Color.BLACK);
         view.setGravity(Gravity.CENTER);
-        view.setText(locationList.get(position));
+        view.setText(mLocationDataList.get(position).getName());
 
         return view;
     }
@@ -56,10 +60,10 @@ public class LocationAdapter extends ArrayAdapter<String> {
     @Override
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
-        TextView view = new TextView(context);
+        TextView view = new TextView(mContext);
 
         view.setTextColor(Color.BLACK);
-        view.setText(locationList.get(position));
+        view.setText(mLocationDataList.get(position).getName());
         view.setHeight(120);
 
         return view;

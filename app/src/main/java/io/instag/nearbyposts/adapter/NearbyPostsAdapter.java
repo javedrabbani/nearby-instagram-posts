@@ -44,10 +44,11 @@ public class NearbyPostsAdapter extends BaseAdapter {
 
     public NearbyPostsAdapter(Context context, ArrayList<NearbyPost> posts) {
         //super(context, R.layout.channel_row_layout, channels);
-        mContext = context;
-        mNearbyPostsArray.addAll(posts);
+        this.mContext = context;
 
-        mInflater = LayoutInflater.from(mContext);
+        this.mNearbyPostsArray = posts;
+
+        this.mInflater = LayoutInflater.from(mContext);
     }
 
     @Override

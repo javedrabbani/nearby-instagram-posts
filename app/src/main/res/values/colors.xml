@@ -4,5 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="list_row_bg_color">#f6f6f6</color>
+    <color name="list_row_bg_color">#f0f0e0</color>
+    <color name="list_bg_color">#f6f6f6</color>
+    <color name="spinner_bg_color">#f0f3f0</color>
 </resources>

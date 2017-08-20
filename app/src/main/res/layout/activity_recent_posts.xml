@@ -4,18 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
-    tools:context="com.tag.instagramdemo.example.ui.NearbyPostsActivity">
+    android:background="@color/list_bg_color"
+    tools:context="io.instag.nearbyposts.NearbyPostsActivity">
 
     <Spinner
         android:id="@+id/locationSpinner"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:spinnerMode="dialog"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_margin="10dp"
         android:dropDownSelector="@android:drawable/btn_dropdown"
-        android:background="#0fddaf"/>
+        android:background="@color/spinner_bg_color"/>
 
     <ListView
         android:id="@+id/recent_posts_list"

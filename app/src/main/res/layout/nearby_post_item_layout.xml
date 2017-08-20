@@ -17,7 +17,7 @@
         android:paddingBottom="3dip"
         android:paddingTop="3dip"
         android:layout_margin="2dp"
-        android:background="@color/list_row_bg_color">
+        android:background="@android:color/transparent">
 
         <ImageView
             android:id="@+id/profile_picture"
