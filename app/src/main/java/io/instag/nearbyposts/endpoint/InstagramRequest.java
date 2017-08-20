@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.instag.nearbyposts.R;
-import io.instag.nearbyposts.Util;
+import io.instag.nearbyposts.util.Util;
 import io.instag.nearbyposts.model.AccessTokenResponseData;
 import io.instag.nearbyposts.model.NearbyPostsResponseData;
 import io.instag.nearbyposts.model.SearchLocationResponseData;

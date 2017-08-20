@@ -24,6 +24,8 @@ import io.instag.nearbyposts.model.NearbyPostsResponseData;
 import io.instag.nearbyposts.model.SearchLocationResponseData;
 import io.instag.nearbyposts.model.data.Data;
 import io.instag.nearbyposts.model.data.LocationData;
+import io.instag.nearbyposts.observer.LocationObserver;
+import io.instag.nearbyposts.util.Util;
 
 public class NearbyPostsActivity extends AppCompatActivity {
 
@@ -41,9 +43,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
 
     private InstagramRequest mInstagramRequest;
 
-    // Remove later
-    private final double LAT_INIT = 51.55;
-    private final double LNG_INIT = 0.21666666666667;
+    private LocationObserver mLocationObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,31 @@ public class NearbyPostsActivity extends AppCompatActivity {
         // Instagram request
         setupRequest();
 
-        fetchLocationData(LAT_INIT, LNG_INIT);
+        mLocationObserver = new LocationObserver(NearbyPostsActivity.this, new LocationObserver.LocationUpdatedListener() {
+            @Override
+            public void onLocationUpdated(double lat, double lng) {
+                fetchLocationData(lat, lng);
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (mLocationObserver.checkPermissions()) {
+            mLocationObserver.startLocationUpdates();
+        } else if (!mLocationObserver.checkPermissions()) {
+            mLocationObserver.requestPermissions();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Remove location updates to save battery.
+        mLocationObserver.stopLocationUpdates();
     }
 
     private void setupUI() {

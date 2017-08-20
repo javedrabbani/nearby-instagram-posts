@@ -12,6 +12,7 @@ import android.webkit.WebViewClient;
 import io.instag.nearbyposts.endpoint.InstagramEndPoint;
 import io.instag.nearbyposts.endpoint.InstagramRequest;
 import io.instag.nearbyposts.model.AccessTokenResponseData;
+import io.instag.nearbyposts.util.Util;
 
 public class LoginActivity extends AppCompatActivity {
 

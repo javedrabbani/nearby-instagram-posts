@@ -8,4 +8,8 @@
     <string name="client_id">043c8f5ceef847929f5440065973bce8</string>
     <string name="client_secret">51b4c784c5f44ed8b84b618933ece626</string>
 
+    <string name="permission_rationale">Location permission is needed for core functionality</string>
+    <string name="permission_denied_explanation">Permission was denied, but is needed for core
+        functionality.</string>
+
 </resources>

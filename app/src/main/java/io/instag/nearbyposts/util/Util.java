@@ -1,4 +1,4 @@
-package io.instag.nearbyposts;
+package io.instag.nearbyposts.util;
 
 import android.util.Log;
 
