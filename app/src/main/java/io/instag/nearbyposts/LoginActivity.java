@@ -1,7 +1,9 @@
 package io.instag.nearbyposts;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
@@ -42,6 +44,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private Context mContext;
 
+    private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,11 +53,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mContext = this;
 
-        mWebView = (WebView) findViewById(R.id.login_webview);
-        if (mWebView != null) {
-            mWebView.setWebViewClient(new LoginWebViewClient());
-            mWebView.loadUrl(InstagramEndPoint.getAuthEndpoint(mContext));
-        }
+        setupUI();
 
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
@@ -62,11 +62,48 @@ public class LoginActivity extends AppCompatActivity {
         gson = gsonBuilder.create();
     }
 
+    private void setupUI() {
+        setupProgressDialog();
+
+        mWebView = (WebView) findViewById(R.id.login_webview);
+        if (mWebView != null) {
+            mWebView.setWebViewClient(new LoginWebViewClient());
+            mWebView.loadUrl(InstagramEndPoint.getAuthEndpoint(mContext));
+
+            updateProgressDialogInfo("Authorizing ...");
+        }
+    }
+
+    private void setupProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(mContext);
+            mProgressDialog.setMessage("...");
+        }
+    }
+
+    private void showProgressDialog() {
+        if (mProgressDialog != null && !mProgressDialog.isShowing()) {
+            mProgressDialog.show();
+        }
+    }
+
+    private void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.hide();
+        }
+    }
+
+    private void updateProgressDialogInfo(String infoMessage) {
+        if (mProgressDialog != null) {
+            mProgressDialog.setMessage(infoMessage);
+        }
+    }
+
     private class LoginWebViewClient extends WebViewClient {
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Util.LOGD("Redirecting URL " + url);
+            Util.LOGD("Redirect URL " + url);
 
             if (url.startsWith(InstagramEndPoint.REDIRECT_URI)) {
                 String urls[] = url.split("=");
@@ -76,10 +113,25 @@ public class LoginActivity extends AppCompatActivity {
             }
             return false;
         }
+
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            showProgressDialog();
+        }
+
+        public void onPageFinished(WebView view, String url) {
+            hideProgressDialog();
+        }
+
+        public void onLoadResource(WebView view, String url) {
+            showProgressDialog();
+        }
+
     } // WebViewClient
 
     private void fetchAccessTokenWithVolley(final String code) {
         Util.LOGI("Fetching access token with code = " + code);
+
+        updateProgressDialogInfo("Fetching token ...");
 
         StringRequest request = new StringRequest(Request.Method.POST, InstagramEndPoint.ACCESS_TOKEN_ENDPOINT,
                 onAccessTokenSuccess, onAccessTokenFailure) {
@@ -113,6 +165,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 Util.LOGI("Access Token = " + mAccessToken);
 
+                hideProgressDialog();
+
                 launchNearbyPostsActivity();
                 //fetchLocationDataWithVolley(LAT, LNG);
             } else {
@@ -136,6 +190,8 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         public void onErrorResponse(VolleyError error) {
             Util.LOGE("ERROR fetching Access Token. Error = " + error.toString());
+
+            hideProgressDialog();
         }
     };
 
@@ -220,4 +276,11 @@ public class LoginActivity extends AppCompatActivity {
             Util.LOGE("ERROR Nearby Posts Volley error = " + error.toString());
         }
     };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        hideProgressDialog();
+    }
 }
