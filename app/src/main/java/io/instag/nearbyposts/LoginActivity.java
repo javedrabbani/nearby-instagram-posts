@@ -113,8 +113,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 Util.LOGI("Access Token = " + mAccessToken);
 
-                //launchNearbyPostsActivity();
-                fetchLocationDataWithVolley(LAT, LNG);
+                launchNearbyPostsActivity();
+                //fetchLocationDataWithVolley(LAT, LNG);
             } else {
                 Util.LOGE("Failed to parse ... ");
             }
@@ -128,6 +128,8 @@ public class LoginActivity extends AppCompatActivity {
         intent.putExtra(NearbyPostsActivity.INTENT_STRING_ACCESS_TOKEN, mAccessToken);
 
         startActivity(intent);
+
+        finish();
     }
 
     private final Response.ErrorListener onAccessTokenFailure = new Response.ErrorListener() {
