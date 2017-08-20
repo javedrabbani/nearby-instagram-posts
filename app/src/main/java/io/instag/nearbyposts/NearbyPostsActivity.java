@@ -12,22 +12,13 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.common.io.ByteStreams;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.instag.nearbyposts.adapter.LocationAdapter;
 import io.instag.nearbyposts.adapter.NearbyPostsAdapter;
-import io.instag.nearbyposts.endpoint.InstagramEndPoint;
+import io.instag.nearbyposts.endpoint.InstagramRequest;
 import io.instag.nearbyposts.model.NearbyPost;
 import io.instag.nearbyposts.model.NearbyPostsResponseData;
 import io.instag.nearbyposts.model.SearchLocationResponseData;
@@ -48,8 +39,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
 
     private String mAccessToken;
 
-    private Gson gson;
-    private RequestQueue requestQueue;
+    private InstagramRequest mInstagramRequest;
 
     // Remove later
     private final double LAT_INIT = 51.55;
@@ -69,13 +59,10 @@ public class NearbyPostsActivity extends AppCompatActivity {
         // UI
         setupUI();
 
-        // Volley
-        setupVolley();
+        // Instagram request
+        setupRequest();
 
-        // Gson
-        setupGson();
-
-        fetchLocationDataWithVolley(LAT_INIT, LNG_INIT);
+        fetchLocationData(LAT_INIT, LNG_INIT);
     }
 
     private void setupUI() {
@@ -107,7 +94,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
                     // Get location info
                     Util.LOGI("Location data info = " + locationData);
 
-                    fetchNearbyPostsForLocationIdWithVolley(locationData.getId());
+                    fetchNearbyPostsForLocation(locationData.getId());
                 }
             }
 
@@ -137,57 +124,37 @@ public class NearbyPostsActivity extends AppCompatActivity {
         });
     }
 
-    private void setupVolley() {
-        requestQueue = Volley.newRequestQueue(getApplicationContext());
+    private void setupRequest() {
+        mInstagramRequest = new InstagramRequest(mContext);
     }
 
-    private void setupGson() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        //gsonBuilder.setDateFormat("M/d/yy hh:mm a");
-        gson = gsonBuilder.create();
-    }
+    private void fetchLocationData(final double lat, final double lng) {
 
-    private void fetchLocationDataWithVolley(final double lat, final double lng) {
-        String ENDPOINT = InstagramEndPoint.LOCATION_SEARCH_ENDPOINT + "?lat=" + lat + "&lng=" + lng + "&access_token=" + mAccessToken;
-        Util.LOGI("Location End point = " + ENDPOINT);
+        mInstagramRequest.fetchSearchLocationData(mAccessToken, lat, lng, new InstagramRequest.SearchLocationResponseListener() {
+            @Override
+            public void onSuccess(SearchLocationResponseData searchLocationResponseData) {
+                if (searchLocationResponseData != null) {
+                    List<LocationData> locationDataList = searchLocationResponseData.getLocationData();
 
-        StringRequest request = new StringRequest(ENDPOINT,
-                onLocationSearchSuccess, onLocationSearchFailure);
+                    mLocationDataList.clear();
+                    mLocationDataList.addAll(locationDataList);
 
-        requestQueue.add(request);
-    }
+                    Util.LOGI("*** Location Data List items  = " + locationDataList.size());
 
-    private final Response.Listener<String> onLocationSearchSuccess = new Response.Listener<String>() {
-        @Override
-        public void onResponse(String response) {
-            Util.LOGI("*** SUCCESS Location Search. Response = " + response);
+                    // Update spinner
+                    updateSpinner();
 
-            SearchLocationResponseData searchLocationResponseData =
-                    gson.fromJson(response, SearchLocationResponseData.class);
-
-            if (searchLocationResponseData != null) {
-                List<LocationData> locationDataList = searchLocationResponseData.getLocationData();
-
-                mLocationDataList.clear();
-                mLocationDataList.addAll(locationDataList);
-
-                Util.LOGI("*** Location Data List items  = " + locationDataList.size());
-
-                // Update spinner
-                updateSpinner();
-
-            } else {
-                Util.LOGE("*** Failed to parse ... ");
+                } else {
+                    Util.LOGE("Did not get a valid response object");
+                }
             }
-        }
-    };
 
-    private final Response.ErrorListener onLocationSearchFailure = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Util.LOGE("ERROR Location Search. Error = " + error.toString());
-        }
-    };
+            @Override
+            public void onFailure(String error) {
+                //
+            }
+        });
+    }
 
     private void updateSpinner() {
 
@@ -204,53 +171,37 @@ public class NearbyPostsActivity extends AppCompatActivity {
         });
     }
 
-    private void fetchNearbyPostsForLocationIdWithVolley(String locationId) {
+    private void fetchNearbyPostsForLocation(String locationId) {
         Util.LOGI("Fetch Nearby posts for location with Id = " + locationId);
 
-        //https://api.instagram.com/v1/locations/{location-id}/media/recent?access_token=ACC
-        String ENDPOINT = InstagramEndPoint.LOCATION_BASE_ENDPOINT + "/" + locationId + "/media/recent?access_token=" + mAccessToken;
-        Util.LOGI("Near ENDPOINT = " + ENDPOINT);
+        mInstagramRequest.fetchNearbyPostsForLocation(mAccessToken, locationId, new InstagramRequest.NearbyPostsResponseListener() {
+            @Override
+            public void onSuccess(NearbyPostsResponseData nearbyPostsResponseData) {
+                if (nearbyPostsResponseData != null) {
+                    List<Data> postsDataList = nearbyPostsResponseData.getData();
 
-        StringRequest request = new StringRequest(ENDPOINT, onNearbyPostsSuccess, onNearbyPostsFailure);
-        requestQueue.add(request);
-    }
+                    mNearbyPostsArray.clear();
 
-    private final Response.Listener<String> onNearbyPostsSuccess = new Response.Listener<String>() {
-        @Override
-        public void onResponse(String response) {
-            Util.LOGI("SUCCESS Nearby Posts Search. Response = " + response);
+                    Util.LOGI("Nearby Posts Data List items  = " + postsDataList.size());
+                    for (Data poData : postsDataList) {
+                        Util.LOGI("Posts Data = " + poData);
 
-            NearbyPostsResponseData nearbyPostsResponseData =
-                    gson.fromJson(response, NearbyPostsResponseData.class);
+                        NearbyPost nearbyPost = poData.toNearbyPost();
+                        Util.LOGI("Nearby Post = " + nearbyPost.toString());
 
-            if (nearbyPostsResponseData != null) {
-                List<Data> postsDataList = nearbyPostsResponseData.getData();
+                        mNearbyPostsArray.add(nearbyPost);
+                    }
 
-                mNearbyPostsArray.clear();
-
-                Util.LOGI("Nearby Posts Data List items  = " + postsDataList.size());
-                for (Data poData : postsDataList) {
-                    Util.LOGI("Posts Data = " + poData);
-
-                    NearbyPost nearbyPost = poData.toNearbyPost();
-                    Util.LOGI("Nearby Post = " + nearbyPost.toString());
-
-                    mNearbyPostsArray.add(nearbyPost);
+                    updateListView();
                 }
-
-                updateListView();
-            } else {
-                Util.LOGE("Failed to parse ... ");
             }
-        }
-    };
 
-    private final Response.ErrorListener onNearbyPostsFailure = new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Util.LOGE("ERROR Nearby Posts Volley error = " + error.toString());
-        }
-    };
+            @Override
+            public void onFailure(String error) {
+                Util.LOGE("ERROR Nearby Posts Volley error = " + error);
+            }
+        });
+    }
 
     private void updateListView() {
         ((Activity)mContext).runOnUiThread(new Runnable() {
@@ -279,7 +230,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
             is = manager.open("recents.json");
 
             if (is != null) {
-                jsonData = new String(ByteStreams.toByteArray(is));
+                jsonData = new String(com.google.common.io.ByteStreams.toByteArray(is));
 
                 is.close();
             }
@@ -289,6 +240,10 @@ public class NearbyPostsActivity extends AppCompatActivity {
 
         // Print JSON Data
         Util.LOGI("JSON Data read from assets: (length =  " + jsonData.length() + ")");
+
+        com.google.gson.GsonBuilder gsonBuilder = new com.google.gson.GsonBuilder();
+        //gsonBuilder.setDateFormat("M/d/yy hh:mm a");
+        com.google.gson.Gson gson = gsonBuilder.create();
 
         recentPosts = gson.fromJson(jsonData, NearbyPostsResponseData.class);
         if (recentPosts != null) {

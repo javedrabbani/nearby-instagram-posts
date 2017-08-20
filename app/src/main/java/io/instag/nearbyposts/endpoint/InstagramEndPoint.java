@@ -20,6 +20,8 @@ public class InstagramEndPoint {
 
     public static final String REDIRECT_URI  = "https://www.google.co.uk";
 
+    public static final int DEFAULT_SEARCH_DISTANCE_METERS = 750;
+
     public static String getAuthEndpoint(Context context) {
         final String authUrl = InstagramEndPoint.AUTH_ENDPOINT
                 + "?client_id="
