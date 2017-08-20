@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">NearbyPosts</string>
     <string name="action_settings">Settings</string>
+
+    <string name="title_activity_login">LoginActivity</string>
+
+    <!-- Instagram -->
+    <string name="client_id">043c8f5ceef847929f5440065973bce8</string>
+    <string name="client_secret">51b4c784c5f44ed8b84b618933ece626</string>
+
 </resources>
