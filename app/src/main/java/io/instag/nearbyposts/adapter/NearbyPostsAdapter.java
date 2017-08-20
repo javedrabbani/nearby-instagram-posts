@@ -65,6 +65,7 @@ public class NearbyPostsAdapter extends BaseAdapter {
 
             convertView = mInflater.inflate(R.layout.nearby_post_item_layout, parent, false);
 
+            viewHolder.fullName = (TextView) convertView.findViewById(R.id.full_name);
             viewHolder.userName = (TextView) convertView.findViewById(R.id.user_name);
             viewHolder.profilePicture = (ImageView) convertView.findViewById(R.id.profile_picture);
 
@@ -77,13 +78,16 @@ public class NearbyPostsAdapter extends BaseAdapter {
 
         // Populate data
 
+        // Full Name
+        viewHolder.fullName.setText(nearbyPost.getFullName());
+
         // User Name
         viewHolder.userName.setText(nearbyPost.getUserName());
 
         // Profile Picture
         Picasso.with(mContext)
                 .load(nearbyPost.getProfilePicture())
-                    //.placeholder(R.drawable.profile)
+                    .placeholder(R.mipmap.ic_insert_photo_black_48dp)
                     .into(viewHolder.profilePicture);
         // Post image
         Picasso.with(mContext)

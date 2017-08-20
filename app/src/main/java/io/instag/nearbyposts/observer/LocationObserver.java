@@ -197,8 +197,8 @@ public class LocationObserver {
         // Provide an additional rationale to the user. This would happen if the user denied the
         // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
-            showSnackbar(R.string.permission_rationale,
-                    android.R.string.ok, new View.OnClickListener() {
+            Util.showSnackbar(mContext, mContext.getResources().getString(R.string.permission_rationale),
+                    mContext.getResources().getString(android.R.string.ok), new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             // Request permission
@@ -215,14 +215,5 @@ public class LocationObserver {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
-    }
-
-    private void showSnackbar(final int mainTextStringId, final int actionStringId,
-                              View.OnClickListener listener) {
-        Snackbar.make(
-                mContext.findViewById(android.R.id.content),
-                mContext.getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(mContext.getString(actionStringId), listener).show();
     }
 }

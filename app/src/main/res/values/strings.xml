@@ -12,4 +12,6 @@
     <string name="permission_denied_explanation">Permission was denied, but is needed for core
         functionality.</string>
 
+    <string name="empty_list_message">No Instagram posts found near your selected location.</string>
+
 </resources>

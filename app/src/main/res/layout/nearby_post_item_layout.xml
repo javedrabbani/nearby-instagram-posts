@@ -23,20 +23,31 @@
             android:id="@+id/profile_picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:foreground="@drawable/image_view_fg"
             android:layout_marginLeft="10dip"
             android:layout_marginRight="10dip" />
 
-        <TextView
-            android:id="@+id/user_name"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:text="Test"
-            android:paddingBottom="5dip"
-            android:paddingTop="5dip"
-            android:paddingRight="5dip"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/full_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="Full Name"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

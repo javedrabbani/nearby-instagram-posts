@@ -3,14 +3,18 @@ package io.instag.nearbyposts.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import io.instag.nearbyposts.R;
 import io.instag.nearbyposts.model.data.Location;
 import io.instag.nearbyposts.model.data.LocationData;
 
@@ -22,15 +26,21 @@ public class LocationAdapter extends ArrayAdapter<LocationData> {
 
     private Context mContext;
     private List<LocationData> mLocationDataList = new ArrayList<>();
+    private LayoutInflater mInflater;
+    private int mLayoutResourceId;
 
     public LocationAdapter(Context context,
-                           int textViewResourceId,
+                           int layoutResourceId,
                            List<LocationData> locationDataList) {
 
-        super(context, textViewResourceId, locationDataList);
+        super(context, layoutResourceId, locationDataList);
 
         this.mContext = context;
         this.mLocationDataList = locationDataList;
+
+        this.mInflater = LayoutInflater.from(mContext);
+
+        this.mLayoutResourceId = layoutResourceId;
     }
 
     public int getCount(){
@@ -47,24 +57,44 @@ public class LocationAdapter extends ArrayAdapter<LocationData> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        TextView view = new TextView(mContext);
-        view.setTextColor(Color.BLACK);
-        view.setGravity(Gravity.CENTER);
-        view.setText(mLocationDataList.get(position).getName());
+        TextView view;
+        if (convertView == null) {
+            convertView = mInflater.inflate(mLayoutResourceId, parent, false);
+
+            view = (TextView) convertView.findViewById(android.R.id.text1);
+
+            convertView.setTag(view);
+        } else {
+            view = (TextView) convertView.getTag();
+        }
+
+        if (view != null) {
+            view.setTextColor(mContext.getResources().getColor(R.color.colorAccent));
+            view.setGravity(Gravity.CENTER);
+            view.setText(mLocationDataList.get(position).getName());
+        }
 
         return view;
     }
 
-    //View of Spinner on dropdown Popping
-
     @Override
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
-        TextView view = new TextView(mContext);
+        TextView view;
+        if (convertView == null) {
+            convertView = mInflater.inflate(mLayoutResourceId, parent, false);
 
-        view.setTextColor(Color.BLACK);
-        view.setText(mLocationDataList.get(position).getName());
-        view.setHeight(120);
+            view = (TextView) convertView.findViewById(android.R.id.text1);
+
+            convertView.setTag(view);
+        } else {
+            view = (TextView) convertView.getTag();
+        }
+
+        if (view != null) {
+            view.setGravity(Gravity.CENTER);
+            view.setText(mLocationDataList.get(position).getName());
+        }
 
         return view;
     }

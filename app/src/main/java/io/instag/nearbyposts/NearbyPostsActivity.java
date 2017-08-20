@@ -1,18 +1,19 @@
 package io.instag.nearbyposts;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
 
     private ListView mListView = null;
     private Spinner mSpinner = null;
+    private ProgressBar mProgressBar = null;
 
     private ArrayList<LocationData> mLocationDataList = new ArrayList<>();
     private ArrayList<NearbyPost> mNearbyPostsArray = new ArrayList<>();
@@ -48,7 +50,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recent_posts);
+        setContentView(R.layout.activity_nearby_posts);
 
         mContext = this;
 
@@ -92,6 +94,8 @@ public class NearbyPostsActivity extends AppCompatActivity {
     private void setupUI() {
         setupSpinner();
         setupListView();
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
     }
 
     private void setupSpinner() {
@@ -139,6 +143,8 @@ public class NearbyPostsActivity extends AppCompatActivity {
         mListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mListView.setAdapter(adapter);
 
+        mListView.setEmptyView(findViewById(R.id.empty_list));
+
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -146,6 +152,18 @@ public class NearbyPostsActivity extends AppCompatActivity {
                 Toast.makeText(mContext, "Item Title = " + nearbyPost.getFullName(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showProgressBar() {
+        if (mProgressBar != null && !mProgressBar.isShown()) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hideProgressBar() {
+        if (mProgressBar != null && mProgressBar.isShown()) {
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 
     private void setupRequest() {
@@ -169,6 +187,14 @@ public class NearbyPostsActivity extends AppCompatActivity {
                     updateSpinner();
 
                 } else {
+                    Util.showSnackbar(NearbyPostsActivity.this,
+                            "Error fetching location data.",
+                            mContext.getResources().getString(android.R.string.ok), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // Do nothing for now ..
+                                }
+                            });
                     Util.LOGE("Did not get a valid response object");
                 }
             }
@@ -198,9 +224,14 @@ public class NearbyPostsActivity extends AppCompatActivity {
     private void fetchNearbyPostsForLocation(String locationId) {
         Util.LOGI("Fetch Nearby posts for location with Id = " + locationId);
 
+        showProgressBar();
+
         mInstagramRequest.fetchNearbyPostsForLocation(mAccessToken, locationId, new InstagramRequest.NearbyPostsResponseListener() {
             @Override
             public void onSuccess(NearbyPostsResponseData nearbyPostsResponseData) {
+
+                hideProgressBar();
+
                 if (nearbyPostsResponseData != null) {
                     List<Data> postsDataList = nearbyPostsResponseData.getData();
 
@@ -222,7 +253,18 @@ public class NearbyPostsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(String error) {
+                hideProgressBar();
+
                 Util.LOGE("ERROR Nearby Posts Volley error = " + error);
+
+                Util.showSnackbar(NearbyPostsActivity.this,
+                        "Error fetching nearby posts.",
+                        mContext.getResources().getString(android.R.string.ok), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // Do nothing for now ..
+                            }
+                        });
             }
         });
     }
@@ -239,56 +281,5 @@ public class NearbyPostsActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private NearbyPostsResponseData parseRecentPosts() {
-        NearbyPostsResponseData recentPosts = null;
-
-        // Read json data from assets
-        AssetManager manager = getResources().getAssets();
-
-        InputStream is = null;
-        String jsonData = null;
-
-        try {
-            is = manager.open("recents.json");
-
-            if (is != null) {
-                jsonData = new String(com.google.common.io.ByteStreams.toByteArray(is));
-
-                is.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Print JSON Data
-        Util.LOGI("JSON Data read from assets: (length =  " + jsonData.length() + ")");
-
-        com.google.gson.GsonBuilder gsonBuilder = new com.google.gson.GsonBuilder();
-        //gsonBuilder.setDateFormat("M/d/yy hh:mm a");
-        com.google.gson.Gson gson = gsonBuilder.create();
-
-        recentPosts = gson.fromJson(jsonData, NearbyPostsResponseData.class);
-        if (recentPosts != null) {
-
-            List<Data> list = recentPosts.getData();
-
-            Util.LOGI("Done ... size = " + list.size());
-
-            mNearbyPostsArray.clear();
-
-            for (Data datum : list) {
-
-                NearbyPost nearbyPost = datum.toNearbyPost();
-
-                mNearbyPostsArray.add(nearbyPost);
-
-                Util.LOGI("Nearby Post: " + nearbyPost.toString());
-                Util.LOGI("---------------------------------------");
-            }
-        }
-
-        return recentPosts;
     }
 }
