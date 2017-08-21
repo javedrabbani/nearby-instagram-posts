@@ -1,12 +1,14 @@
 package io.instag.nearbyposts;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieSyncManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -96,6 +98,8 @@ public class NearbyPostsActivity extends AppCompatActivity {
         setupListView();
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+
+        getSupportActionBar().setTitle("Nearby Instagram Posts");
     }
 
     private void setupSpinner() {
@@ -201,7 +205,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(String error) {
-                //
+                Util.LOGE("[Error] fetching location data = " + error);
             }
         });
     }
@@ -255,7 +259,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
             public void onFailure(String error) {
                 hideProgressBar();
 
-                Util.LOGE("ERROR Nearby Posts Volley error = " + error);
+                Util.LOGE("[Error] Nearby Posts = " + error);
 
                 Util.showSnackbar(NearbyPostsActivity.this,
                         "Error fetching nearby posts.",
@@ -281,5 +285,50 @@ public class NearbyPostsActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    //	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.menu_main, menu);
+
+		//MenuItem searchItem = menu.findItem(R.id.action_search);
+		//SearchView searchView = (SearchView) MenuItem.getActionView(searchItem);
+//		SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+//		getActionView// Configure the search info and add any event listeners
+
+		return super.onCreateOptionsMenu(menu);
+	}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_logout:
+                logout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void clearCookies() {
+        CookieSyncManager.createInstance(mContext);
+        android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
+        cookieManager.removeAllCookie();
+    }
+    private void logout() {
+        clearCookies();
+        launchLoginActivity();
+    }
+
+    // Launch Log-in activity
+    private void launchLoginActivity() {
+        Intent intent = new Intent();
+
+        intent.setClassName(NearbyPostsActivity.this, "io.instag.nearbyposts.LoginActivity");
+
+        startActivity(intent);
+
+        finish();
     }
 }

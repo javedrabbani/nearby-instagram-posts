@@ -109,12 +109,12 @@ public class InstagramRequest {
 
     public void fetchSearchLocationData(final String accessToken, final double lat, final double lng, final SearchLocationResponseListener listener) {
 
-        String ENDPOINT = InstagramEndPoint.LOCATION_SEARCH_ENDPOINT + "?lat=" + lat +
+        String requestString = InstagramEndPoint.LOCATION_SEARCH_ENDPOINT + "?lat=" + lat +
                 "&lng=" + lng + "&access_token=" + accessToken + "&distance=" + InstagramEndPoint.DEFAULT_SEARCH_DISTANCE_METERS;
 
-        Util.LOGI("Location End point = " + ENDPOINT);
+        Util.LOGI("Location End point = " + requestString);
 
-        StringRequest request = new StringRequest(ENDPOINT,
+        StringRequest request = new StringRequest(requestString,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -145,10 +145,10 @@ public class InstagramRequest {
         Util.LOGI("Fetch Nearby posts for location with Id = " + locationId);
 
         //https://api.instagram.com/v1/locations/{location-id}/media/recent?access_token=ACC
-        String ENDPOINT = InstagramEndPoint.LOCATION_BASE_ENDPOINT + "/" + locationId + "/media/recent?access_token=" + accessToken;
-        Util.LOGI("Near ENDPOINT = " + ENDPOINT);
+        String requestString = InstagramEndPoint.LOCATION_BASE_ENDPOINT + "/" + locationId + "/media/recent?access_token=" + accessToken;
+        Util.LOGI("Near ENDPOINT = " + requestString);
 
-        StringRequest request = new StringRequest(ENDPOINT, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(requestString, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         // Success

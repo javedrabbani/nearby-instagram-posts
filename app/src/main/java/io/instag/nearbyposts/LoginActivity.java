@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -44,10 +48,17 @@ public class LoginActivity extends AppCompatActivity {
         mWebView = (WebView) findViewById(R.id.login_webview);
         if (mWebView != null) {
             mWebView.setWebViewClient(new LoginWebViewClient());
-            mWebView.loadUrl(InstagramEndPoint.getAuthEndpoint(mContext));
 
-            updateProgressDialogInfo("Authorizing ...");
+            startLoadingInstagramLoginPage();
         }
+    }
+
+    private void startLoadingInstagramLoginPage() {
+        mWebView.loadUrl(InstagramEndPoint.getAuthEndpoint(mContext));
+        mWebView.setVisibility(View.VISIBLE);
+
+        updateProgressDialogInfo("Authorizing ...");
+        showProgressDialog();
     }
 
     private void setupProgressDialog() {
@@ -91,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
             if (url.startsWith(InstagramEndPoint.REDIRECT_URI)) {
                 String tokens[] = url.split("=");
                 if (tokens.length == 2) {
-                    Util.LOGD("Autorized with code = " + tokens[1]);
+                    Util.LOGD("Authorized with code = " + tokens[1]);
                     fetchAccessToken(tokens[1]);
 
                 }
@@ -110,6 +121,36 @@ public class LoginActivity extends AppCompatActivity {
 
         public void onLoadResource(WebView view, String url) {
             showProgressDialog();
+        }
+
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            this.handleErrorCondition();
+        }
+
+        public void onReceivedError(WebView view,
+                                    WebResourceRequest request, WebResourceError error) {
+            this.handleErrorCondition();
+        }
+
+        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+            Util.LOGE("onReceivedHttpError");
+        }
+
+        private void handleErrorCondition() {
+            Util.LOGE("Error while loading page.");
+
+            hideProgressDialog();
+
+            mWebView.setVisibility(View.GONE);
+            mWebView.loadUrl("about:blank");
+
+            Util.showSnackbar(LoginActivity.this, "Failed to reach server. Please check your internet and try again.",
+                    "Retry", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            startLoadingInstagramLoginPage();
+                        }
+                    });
         }
 
     } // WebViewClient

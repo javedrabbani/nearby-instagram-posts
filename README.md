@@ -14,5 +14,3 @@ Once user selects a location from the drop down list, Instagram posts are search
 If there are any posts found, list view loads the post images along side user name, full name and profile picture.
 
 Currently there is no option to change the default search radius around user's current location.
-
-The application at present does not have any Settings to let user log-out from currently logged-in account.
