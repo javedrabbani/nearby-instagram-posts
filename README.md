@@ -16,3 +16,21 @@ If there are any posts found, list view loads the post images along side user na
 Currently there is no option to change the default search radius around user's current location.
 
 To use the app with your Instagram app, simply replace "client_id" and "content_secret" string resources with your Instagram app "CLIENT_ID" and "CLIENT_SECRET". Also update "REDIRECT_URI" with your redirect uri as defined for your app on Instagram developer website.
+
+# Screenshots
+
+![alt text](screenshots/screenshot_instagram_login.png "Instagram login")
+
+![alt text](screenshots/screenshot_instagram_invalid_credentials.png "Instagram invalid user credentials")
+
+![alt text](screenshots/screenshot_ask_location_permissions.png "Ask user for location permissions")
+
+![alt text](screenshots/screenshot_nearby_locations.png "Nearby locations as returned by Instagram")
+
+![alt text](screenshots/screenshot_nearby_posts.png "Instagram posts near user location")
+
+![alt text](screenshots/screenshot_no_nearby_posts.png "No posts found near user location")
+
+
+
+
