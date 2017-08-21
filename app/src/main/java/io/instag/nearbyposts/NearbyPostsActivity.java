@@ -64,7 +64,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
         setupUI();
 
         // Instagram request
-        setupRequest();
+        setupInstagramRequest();
 
         mLocationObserver = new LocationObserver(NearbyPostsActivity.this, new LocationObserver.LocationUpdatedListener() {
             @Override
@@ -170,7 +170,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
         }
     }
 
-    private void setupRequest() {
+    private void setupInstagramRequest() {
         mInstagramRequest = new InstagramRequest(mContext);
     }
 
@@ -185,7 +185,7 @@ public class NearbyPostsActivity extends AppCompatActivity {
                     mLocationDataList.clear();
                     mLocationDataList.addAll(locationDataList);
 
-                    Util.LOGI("*** Location Data List items  = " + locationDataList.size());
+                    Util.LOGI("Location Data List items  = " + locationDataList.size());
 
                     // Update spinner
                     updateSpinner();
@@ -199,7 +199,6 @@ public class NearbyPostsActivity extends AppCompatActivity {
                                     // Do nothing for now ..
                                 }
                             });
-                    Util.LOGE("Did not get a valid response object");
                 }
             }
 
@@ -243,8 +242,6 @@ public class NearbyPostsActivity extends AppCompatActivity {
 
                     Util.LOGI("Nearby Posts Data List items  = " + postsDataList.size());
                     for (Data poData : postsDataList) {
-                        Util.LOGI("Posts Data = " + poData);
-
                         NearbyPost nearbyPost = poData.toNearbyPost();
                         Util.LOGI("Nearby Post = " + nearbyPost.toString());
 
@@ -258,8 +255,6 @@ public class NearbyPostsActivity extends AppCompatActivity {
             @Override
             public void onFailure(String error) {
                 hideProgressBar();
-
-                Util.LOGE("[Error] Nearby Posts = " + error);
 
                 Util.showSnackbar(NearbyPostsActivity.this,
                         "Error fetching nearby posts.",
@@ -291,10 +286,6 @@ public class NearbyPostsActivity extends AppCompatActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_main, menu);
 
-		//MenuItem searchItem = menu.findItem(R.id.action_search);
-		//SearchView searchView = (SearchView) MenuItem.getActionView(searchItem);
-//		SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-//		getActionView// Configure the search info and add any event listeners
 
 		return super.onCreateOptionsMenu(menu);
 	}

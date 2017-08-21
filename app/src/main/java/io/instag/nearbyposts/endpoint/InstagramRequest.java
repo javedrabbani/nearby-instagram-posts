@@ -79,7 +79,7 @@ public class InstagramRequest {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Util.LOGE("ERROR Access Token. Error = " + error.toString());
+                Util.LOGE("[Error] Access Token: " + error.toString());
 
                 String errorString = null;
                 if (error != null)
@@ -146,7 +146,7 @@ public class InstagramRequest {
 
         //https://api.instagram.com/v1/locations/{location-id}/media/recent?access_token=ACC
         String requestString = InstagramEndPoint.LOCATION_BASE_ENDPOINT + "/" + locationId + "/media/recent?access_token=" + accessToken;
-        Util.LOGI("Near ENDPOINT = " + requestString);
+        Util.LOGI("Nearby End Point = " + requestString);
 
         StringRequest request = new StringRequest(requestString, new Response.Listener<String>() {
                     @Override

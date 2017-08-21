@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-            Util.LOGE("onReceivedHttpError");
+            Util.LOGE("HTTP error");
         }
 
         private void handleErrorCondition() {

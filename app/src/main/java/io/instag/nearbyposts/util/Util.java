@@ -11,7 +11,7 @@ import android.view.View;
  */
 
 public class Util {
-    public static final String TAG = "JRS"; // TODO: change to something else
+    public static final String TAG = "NearbyPosts";
 
     public static void LOGI(String msg) {
         Log.i(TAG, msg);

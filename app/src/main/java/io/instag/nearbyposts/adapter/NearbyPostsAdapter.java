@@ -21,13 +21,10 @@ import io.instag.nearbyposts.model.NearbyPost;
 
 public class NearbyPostsAdapter extends BaseAdapter {
 
-    private static final int TYPE_MAX_COUNT = 1;
-
     private Context mContext;
     LayoutInflater mInflater;
     ArrayList<NearbyPost> mNearbyPostsArray = new ArrayList<>();
 
-    // View lookup cache
     private static class NearbyPostHolder {
         TextView userName;
         TextView fullName;
@@ -43,7 +40,6 @@ public class NearbyPostsAdapter extends BaseAdapter {
     }
 
     public NearbyPostsAdapter(Context context, ArrayList<NearbyPost> posts) {
-        //super(context, R.layout.channel_row_layout, channels);
         this.mContext = context;
 
         this.mNearbyPostsArray = posts;
@@ -56,8 +52,6 @@ public class NearbyPostsAdapter extends BaseAdapter {
         // Get the data item for this position
         NearbyPost nearbyPost = getItem(position);
         NearbyPostHolder viewHolder; // view lookup cache stored in tag
-
-        //int type = getItemViewType(position);
 
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
@@ -101,13 +95,12 @@ public class NearbyPostsAdapter extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return TYPE_MAX_COUNT;
+        return 1;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return 0; // FIXME: TODO:
-        //return mNearbyPostsArray.get(position).hasHeader() ? TYPE_HEADER : TYPE_ITEM;
+        return 0;
     }
 
     @Override
