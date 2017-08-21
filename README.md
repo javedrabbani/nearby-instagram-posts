@@ -14,3 +14,5 @@ Once user selects a location from the drop down list, Instagram posts are search
 If there are any posts found, list view loads the post images along side user name, full name and profile picture.
 
 Currently there is no option to change the default search radius around user's current location.
+
+To use the app with your Instagram app, simply replace "client_id" and "content_secret" string resources with your Instagram app "CLIENT_ID" and "CLIENT_SECRET". Also update "REDIRECT_URI" with your redirect uri as defined for your app on Instagram developer website.
